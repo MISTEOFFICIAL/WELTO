@@ -1,0 +1,1619 @@
+
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#F4F6F8">
+<title>WELTO — Personal Finance</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+Georgian:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root {
+  --bg:#F4F6F8;
+  --surface:#FFFFFF;
+  --surface-2:#F8FAFB;
+  --black:#111316;
+  --graphite:#292E34;
+  --text:#20252B;
+  --muted:#87919C;
+  --line:#E7EBEF;
+  --ice:#A7C3D9;
+  --blue:#7897B0;
+  --blue-dark:#58768F;
+  --green:#288365;
+  --red:#C45C5C;
+  --orange:#C58A4C;
+  --shadow:0 8px 30px rgba(27,39,51,.035);
+  --radius:15px;
+}
+
+* {box-sizing:border-box;margin:0;padding:0}
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family:"DM Sans","Noto Sans Georgian",sans-serif;
+  font-size:14px;
+  min-height:100vh;
+}
+button,input,select {font:inherit}
+button {cursor:pointer}
+a {color:inherit;text-decoration:none}
+.app {min-height:100vh}
+
+/* SIDEBAR */
+
+.sidebar {
+  position:fixed;
+  left:0;top:0;bottom:0;
+  width:258px;
+  background:var(--surface);
+  border-right:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  z-index:30;
+  transition:transform .3s ease;
+}
+.brand {
+  height:83px;
+  padding:0 27px;
+  display:flex;
+  align-items:center;
+  border-bottom:1px solid var(--line);
+}
+.brand-name {
+  font-size:27px;
+  font-weight:800;
+  letter-spacing:-1.8px;
+  color:var(--black);
+}
+.brand-name span {color:var(--blue)}
+.brand-caption {
+  font-size:9px;
+  color:var(--muted);
+  letter-spacing:1.8px;
+  margin-left:11px;
+  padding-left:11px;
+  border-left:1px solid var(--line);
+  font-weight:600;
+}
+.sidebar-scroll {
+  overflow-y:auto;
+  padding:23px 15px;
+  flex:1;
+}
+.nav-label {
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1.2px;
+  color:#A1AAB3;
+  padding:0 12px;
+  margin:17px 0 9px;
+}
+.nav-label:first-child {margin-top:0}
+.nav-item {
+  width:100%;
+  height:43px;
+  border:0;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 12px;
+  border-radius:9px;
+  color:#707B86;
+  font-size:12.5px;
+  font-weight:500;
+  text-align:left;
+  margin-bottom:3px;
+  transition:.2s;
+}
+.nav-item svg {width:17px;height:17px;stroke-width:1.8}
+.nav-item:hover {background:#F5F7F9;color:var(--black)}
+.nav-item.active {
+  background:#EDF3F7;
+  color:#405E76;
+  font-weight:700;
+}
+.nav-item.active svg {color:#668AA5}
+.nav-footer {
+  padding:14px 15px;
+  border-top:1px solid var(--line);
+}
+.profile-mini {
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:8px;
+}
+.avatar {
+  width:36px;height:36px;
+  background:#E7EEF3;
+  color:#56748D;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  font-weight:700;
+}
+.profile-info strong {display:block;font-size:12px}
+.profile-info span {font-size:10px;color:var(--muted)}
+
+/* MAIN */
+
+.main {
+  margin-left:258px;
+  min-height:100vh;
+}
+.topbar {
+  height:83px;
+  padding:0 37px;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(15px);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+.top-left {display:flex;align-items:center;gap:17px}
+.mobile-brand {display:none;font-size:23px;font-weight:800;letter-spacing:-1.5px}
+.mobile-brand span {color:var(--blue)}
+.page-context small {
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  margin-bottom:4px;
+}
+.page-context strong {font-size:14px;font-weight:700}
+.top-actions {display:flex;align-items:center;gap:12px}
+.icon-btn {
+  width:38px;height:38px;
+  border:1px solid var(--line);
+  background:white;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  color:#66727D;
+  position:relative;
+}
+.icon-btn svg {width:17px;height:17px}
+.icon-btn:hover {background:#F6F8FA}
+.lang-btn {
+  border:1px solid var(--line);
+  background:white;
+  border-radius:9px;
+  padding:9px 12px;
+  font-size:11px;
+  font-weight:700;
+  color:#53616D;
+}
+.top-avatar {
+  width:36px;height:36px;
+  border-radius:50%;
+  background:var(--black);
+  color:white;
+  display:grid;
+  place-items:center;
+  font-size:11px;
+  font-weight:700;
+}
+.menu-toggle {display:none}
+
+/* CONTENT */
+
+.content {
+  max-width:1500px;
+  margin:auto;
+  padding:34px 37px 55px;
+}
+.welcome-row {
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  margin-bottom:27px;
+}
+.eyebrow {
+  color:var(--blue-dark);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1.3px;
+  margin-bottom:9px;
+}
+h1 {
+  font-size:26px;
+  letter-spacing:-.8px;
+  font-weight:700;
+  color:var(--black);
+}
+.subtitle {
+  color:var(--muted);
+  font-size:12px;
+  margin-top:7px;
+  line-height:1.6;
+}
+.date-control {
+  border:1px solid var(--line);
+  background:white;
+  padding:10px 13px;
+  border-radius:9px;
+  font-size:11px;
+  color:#687581;
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.date-control svg {width:15px}
+
+/* BUTTONS */
+
+.primary-btn {
+  border:0;
+  background:var(--black);
+  color:white;
+  padding:11px 17px;
+  border-radius:9px;
+  font-size:11px;
+  font-weight:600;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  transition:.2s;
+}
+.primary-btn:hover {background:#303942;transform:translateY(-1px)}
+.primary-btn svg {width:15px}
+.secondary-btn {
+  border:1px solid var(--line);
+  background:white;
+  color:#596570;
+  padding:10px 14px;
+  border-radius:9px;
+  font-size:11px;
+  font-weight:600;
+}
+.secondary-btn:hover {background:#F8FAFB}
+
+/* BALANCE */
+
+.overview-grid {
+  display:grid;
+  grid-template-columns:1.55fr 1fr 1fr;
+  gap:16px;
+  margin-bottom:18px;
+}
+.balance-card {
+  background:var(--black);
+  color:white;
+  border-radius:var(--radius);
+  padding:24px 25px;
+  min-height:184px;
+  position:relative;
+  overflow:hidden;
+}
+.balance-card:after {
+  content:"";
+  position:absolute;
+  width:240px;height:240px;
+  border:1px solid rgba(167,195,217,.12);
+  border-radius:50%;
+  right:-90px;top:-120px;
+  box-shadow:0 0 0 30px rgba(167,195,217,.025),
+             0 0 0 60px rgba(167,195,217,.025);
+}
+.card-top {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.card-label {
+  color:#AAB4BE;
+  font-size:11px;
+}
+.card-icon {
+  width:32px;height:32px;
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:9px;
+  display:grid;
+  place-items:center;
+  color:var(--ice);
+}
+.card-icon svg {width:16px}
+.balance-value {
+  font-size:34px;
+  letter-spacing:-1.5px;
+  font-weight:700;
+  margin-top:23px;
+  position:relative;
+  z-index:1;
+}
+.balance-bottom {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:15px;
+  position:relative;
+  z-index:1;
+}
+.balance-note {font-size:10px;color:#9EABB6}
+.balance-change {color:#A9D9C4;font-size:10px}
+.metric-card {
+  background:white;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:22px;
+  min-height:184px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.metric-top {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.metric-icon {
+  width:34px;height:34px;
+  display:grid;place-items:center;
+  border-radius:10px;
+  background:#F0F4F7;
+  color:#6D8AA2;
+}
+.metric-icon svg {width:17px}
+.metric-name {font-size:11px;color:var(--muted)}
+.metric-value {
+  font-size:25px;
+  font-weight:700;
+  letter-spacing:-.7px;
+  margin-top:17px;
+}
+.metric-foot {
+  font-size:10px;
+  color:var(--muted);
+  margin-top:8px;
+}
+.positive {color:var(--green)}
+.negative {color:var(--red)}
+
+/* PANELS */
+
+.panel-grid {
+  display:grid;
+  grid-template-columns:1.55fr 1fr;
+  gap:17px;
+  margin-bottom:18px;
+}
+.panel {
+  background:white;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:22px;
+  min-width:0;
+}
+.panel-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:21px;
+  gap:10px;
+}
+.panel-title {font-size:13px;font-weight:700}
+.panel-desc {font-size:10px;color:var(--muted);margin-top:5px}
+.period-select {
+  border:1px solid var(--line);
+  background:white;
+  border-radius:7px;
+  padding:7px 10px;
+  font-size:10px;
+  color:#65717D;
+  outline:none;
+}
+.chart-wrap {height:235px;position:relative}
+.donut-wrap {
+  width:180px;height:180px;
+  margin:0 auto 15px;
+  position:relative;
+}
+.legend-list {display:grid;gap:11px}
+.legend-item {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:10px;
+}
+.legend-left {display:flex;align-items:center;gap:8px;color:#697580}
+.legend-dot {width:8px;height:8px;border-radius:3px}
+.legend-item strong {font-size:10px}
+
+/* LOWER PANELS */
+
+.lower-grid {
+  display:grid;
+  grid-template-columns:1.4fr 1fr;
+  gap:17px;
+}
+.table-wrap {overflow-x:auto}
+table {width:100%;border-collapse:collapse;white-space:nowrap}
+th {
+  color:#A0A9B2;
+  font-size:9px;
+  text-align:left;
+  font-weight:600;
+  padding:0 10px 13px;
+  border-bottom:1px solid var(--line);
+}
+td {
+  padding:14px 10px;
+  border-bottom:1px solid #F0F2F4;
+  font-size:10px;
+}
+tr:last-child td {border-bottom:0}
+.transaction-name {font-weight:600;color:#303942}
+.transaction-category {color:var(--muted);font-size:9px;margin-top:4px}
+.transaction-amount {font-weight:700}
+.status {
+  display:inline-block;
+  padding:5px 8px;
+  border-radius:20px;
+  font-size:9px;
+  background:#EEF6F2;
+  color:var(--green);
+}
+.goal-list {display:grid;gap:20px}
+.goal-head {display:flex;justify-content:space-between;align-items:center}
+.goal-name {font-size:11px;font-weight:600}
+.goal-amount {font-size:10px;color:#78838E}
+.progress {
+  height:6px;
+  background:#EEF1F4;
+  border-radius:10px;
+  overflow:hidden;
+  margin:10px 0 7px;
+}
+.progress-bar {height:100%;background:#8DAFC7;border-radius:10px}
+.goal-foot {font-size:9px;color:var(--muted);display:flex;justify-content:space-between}
+
+/* GENERIC PAGES */
+
+.page-grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:15px;
+}
+.feature-card {
+  background:white;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:21px;
+  min-height:155px;
+  transition:.2s;
+}
+.feature-card:hover {box-shadow:var(--shadow);transform:translateY(-2px)}
+.feature-card-icon {
+  width:36px;height:36px;
+  background:#EFF4F7;
+  color:#6C8AA3;
+  display:grid;place-items:center;
+  border-radius:10px;
+  margin-bottom:16px;
+}
+.feature-card-icon svg {width:18px}
+.feature-card h3 {font-size:12px;margin-bottom:7px}
+.feature-card p {font-size:10px;color:var(--muted);line-height:1.7}
+.page-intro {
+  background:white;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:23px;
+  margin-bottom:17px;
+}
+.page-intro h2 {font-size:15px;margin-bottom:7px}
+.page-intro p {color:var(--muted);font-size:11px;line-height:1.7}
+.empty-state {
+  background:white;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:55px 20px;
+  text-align:center;
+  color:var(--muted);
+}
+.empty-state svg {width:30px;height:30px;color:#91A9BC;margin-bottom:13px}
+.empty-state h3 {font-size:13px;color:var(--text);margin-bottom:7px}
+.empty-state p {font-size:10px;line-height:1.7}
+
+/* TRANSACTION FORM */
+
+.modal-backdrop {
+  position:fixed;
+  inset:0;
+  background:rgba(15,20,25,.35);
+  backdrop-filter:blur(4px);
+  z-index:100;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+.modal-backdrop.show {display:flex}
+.modal {
+  background:white;
+  width:100%;
+  max-width:440px;
+  border-radius:17px;
+  padding:26px;
+  box-shadow:0 25px 80px rgba(0,0,0,.15);
+}
+.modal-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:22px;
+}
+.modal-header h2 {font-size:17px}
+.close-btn {
+  width:32px;height:32px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:white;
+  display:grid;place-items:center;
+}
+.close-btn svg {width:15px}
+.form-group {margin-bottom:15px}
+.form-group label {
+  display:block;
+  font-size:10px;
+  color:#6D7883;
+  margin-bottom:7px;
+  font-weight:600;
+}
+.form-group input,.form-group select {
+  width:100%;
+  height:43px;
+  border:1px solid var(--line);
+  background:#FBFCFD;
+  border-radius:8px;
+  padding:0 12px;
+  outline:none;
+  color:var(--text);
+  font-size:11px;
+}
+.form-group input:focus,.form-group select:focus {border-color:#91AFC5}
+.form-row {display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-submit {width:100%;justify-content:center;margin-top:5px}
+
+/* SEARCH */
+
+.search-box {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  background:#F7F9FA;
+  border:1px solid var(--line);
+  border-radius:9px;
+  padding:0 12px;
+  height:39px;
+  width:230px;
+}
+.search-box svg {width:15px;color:#9AA4AD}
+.search-box input {border:0;background:transparent;outline:none;width:100%;font-size:10px}
+.toast {
+  position:fixed;
+  bottom:25px;
+  right:25px;
+  padding:13px 18px;
+  background:#20272D;
+  color:white;
+  border-radius:10px;
+  font-size:11px;
+  box-shadow:0 8px 30px rgba(0,0,0,.12);
+  opacity:0;
+  transform:translateY(10px);
+  transition:.25s;
+  pointer-events:none;
+  z-index:200;
+}
+.toast.show {opacity:1;transform:translateY(0)}
+.mobile-overlay {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.25);
+  z-index:25;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1150px) {
+  .overview-grid {grid-template-columns:1.3fr 1fr}
+  .balance-card {grid-column:span 2}
+  .page-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .content {padding:28px 25px}
+  .topbar {padding:0 25px}
+}
+@media(max-width:800px) {
+  .sidebar {transform:translateX(-100%)}
+  .sidebar.open {transform:translateX(0)}
+  .mobile-overlay.show {display:block}
+  .main {margin-left:0}
+  .menu-toggle {display:grid}
+  .mobile-brand {display:block}
+  .page-context {display:none}
+  .topbar {height:68px;padding:0 17px}
+  .content {padding:25px 17px 40px}
+  .panel-grid,.lower-grid {grid-template-columns:1fr}
+  .overview-grid {grid-template-columns:1fr 1fr}
+  .balance-card {grid-column:span 2}
+}
+@media(max-width:520px) {
+  .overview-grid {grid-template-columns:1fr 1fr;gap:10px}
+  .balance-card {grid-column:span 2;min-height:165px;padding:19px}
+  .metric-card {min-height:140px;padding:15px}
+  .metric-value {font-size:21px}
+  .balance-value {font-size:29px}
+  .welcome-row {align-items:flex-start;gap:15px;flex-direction:column}
+  h1 {font-size:22px}
+  .page-grid {grid-template-columns:1fr}
+  .top-actions {gap:7px}
+  .search-box {display:none}
+  .panel {padding:17px}
+  .form-row {grid-template-columns:1fr}
+  .date-control {font-size:10px}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-name">WELTO<span>.</span></div>
+    <div class="brand-caption">FINANCE</div>
+  </div>
+
+  <div class="sidebar-scroll" id="navigation">
+
+    <div class="nav-label">OVERVIEW</div>
+    <button class="nav-item active" data-page="dashboard">
+      <i data-lucide="layout-dashboard"></i><span data-i18n="dashboard">მიმოხილვა</span>
+    </button>
+    <button class="nav-item" data-page="transactions">
+      <i data-lucide="arrow-left-right"></i><span data-i18n="transactions">ტრანზაქციები</span>
+    </button>
+    <button class="nav-item" data-page="accounts">
+      <i data-lucide="wallet"></i><span data-i18n="accounts">ანგარიშები და საფულეები</span>
+    </button>
+    <button class="nav-item" data-page="analytics">
+      <i data-lucide="chart-no-axes-combined"></i><span data-i18n="analytics">ანალიტიკა</span>
+    </button>
+
+    <div class="nav-label">FINANCIAL PLANNING</div>
+    <button class="nav-item" data-page="budget">
+      <i data-lucide="chart-pie"></i><span data-i18n="budget">ბიუჯეტის დაგეგმვა</span>
+    </button>
+    <button class="nav-item" data-page="savings">
+      <i data-lucide="target"></i><span data-i18n="savings">დანაზოგები და მიზნები</span>
+    </button>
+    <button class="nav-item" data-page="debts">
+      <i data-lucide="landmark"></i><span data-i18n="debts">ვალები და ვალდებულებები</span>
+    </button>
+    <button class="nav-item" data-page="assets">
+      <i data-lucide="building-2"></i><span data-i18n="assets">აქტივები და ქონება</span>
+    </button>
+    <button class="nav-item" data-page="bills">
+      <i data-lucide="receipt"></i><span data-i18n="bills">გადასახადები და გამოწერები</span>
+    </button>
+    <button class="nav-item" data-page="forecast">
+      <i data-lucide="trending-up"></i><span data-i18n="forecast">ფინანსური პროგნოზი</span>
+    </button>
+
+    <div class="nav-label">PERSONAL TOOLS</div>
+    <button class="nav-item" data-page="shopping">
+      <i data-lucide="shopping-bag"></i><span data-i18n="shopping">ჭკვიანი შესყიდვები</span>
+    </button>
+    <button class="nav-item" data-page="family">
+      <i data-lucide="users"></i><span data-i18n="family">საოჯახო ფინანსები</span>
+    </button>
+    <button class="nav-item" data-page="documents">
+      <i data-lucide="folder-lock"></i><span data-i18n="documents">დოკუმენტების საცავი</span>
+    </button>
+    <button class="nav-item" data-page="calendar">
+      <i data-lucide="calendar-days"></i><span data-i18n="calendar">ფინანსური კალენდარი</span>
+    </button>
+    <button class="nav-item" data-page="tax">
+      <i data-lucide="file-text"></i><span data-i18n="tax">საგადასახადო აღრიცხვა</span>
+    </button>
+    <button class="nav-item" data-page="education">
+      <i data-lucide="graduation-cap"></i><span data-i18n="education">ფინანსური განათლება</span>
+    </button>
+    <button class="nav-item" data-page="tools">
+      <i data-lucide="calculator"></i><span data-i18n="tools">ფინანსური ინსტრუმენტები</span>
+    </button>
+
+    <div class="nav-label">INTELLIGENCE</div>
+    <button class="nav-item" data-page="ai">
+      <i data-lucide="sparkles"></i><span>WELTO AI</span>
+    </button>
+
+    <div class="nav-label">PREFERENCES</div>
+    <button class="nav-item" data-page="settings">
+      <i data-lucide="settings"></i><span data-i18n="settings">პარამეტრები</span>
+    </button>
+  </div>
+
+  <div class="nav-footer">
+    <div class="profile-mini">
+      <div class="avatar">W</div>
+      <div class="profile-info">
+        <strong>My WELTO</strong>
+        <span data-i18n="personalAccount">პირადი ანგარიში</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<div class="mobile-overlay" id="mobileOverlay"></div>
+
+<!-- MAIN -->
+<main class="main">
+  <header class="topbar">
+    <div class="top-left">
+      <button class="icon-btn menu-toggle" id="menuToggle" aria-label="Menu">
+        <i data-lucide="menu"></i>
+      </button>
+      <div class="mobile-brand">WELTO<span>.</span></div>
+      <div class="page-context">
+        <small>WELTO / <span id="breadcrumb">Overview</span></small>
+        <strong id="topPageTitle">ფინანსური მიმოხილვა</strong>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <div class="search-box">
+        <i data-lucide="search"></i>
+        <input id="globalSearch" placeholder="ძიება...">
+      </div>
+      <button class="lang-btn" id="languageBtn">KA / EN</button>
+      <button class="icon-btn" id="notificationBtn" aria-label="Notifications">
+        <i data-lucide="bell"></i>
+      </button>
+      <div class="top-avatar">W</div>
+    </div>
+  </header>
+
+  <section class="content" id="pageContent"></section>
+</main>
+</div>
+
+<!-- TRANSACTION MODAL -->
+<div class="modal-backdrop" id="transactionModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 data-i18n="addTransaction">ტრანზაქციის დამატება</h2>
+      <button class="close-btn" id="closeModal"><i data-lucide="x"></i></button>
+    </div>
+
+    <form id="transactionForm">
+      <div class="form-group">
+        <label data-i18n="transactionType">ტრანზაქციის ტიპი</label>
+        <select id="txType">
+          <option value="expense" data-i18n="expense">ხარჯი</option>
+          <option value="income" data-i18n="income">შემოსავალი</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label data-i18n="description">დასახელება</label>
+        <input id="txName" required placeholder="მაგ. ხელფასი, სურსათი">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label data-i18n="amount">თანხა</label>
+          <input id="txAmount" type="number" min="0.01" step="0.01" required placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label data-i18n="currency">ვალუტა</label>
+          <select id="txCurrency">
+            <option value="GEL">GEL ₾</option>
+            <option value="USD">USD $</option>
+            <option value="EUR">EUR €</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label data-i18n="category">კატეგორია</label>
+        <select id="txCategory">
+          <option value="Food">საკვები / Food</option>
+          <option value="Transport">ტრანსპორტი / Transport</option>
+          <option value="Housing">საცხოვრებელი / Housing</option>
+          <option value="Shopping">შესყიდვები / Shopping</option>
+          <option value="Health">ჯანმრთელობა / Health</option>
+          <option value="Entertainment">გართობა / Entertainment</option>
+          <option value="Salary">ხელფასი / Salary</option>
+          <option value="Other">სხვა / Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label data-i18n="date">თარიღი</label>
+        <input id="txDate" type="date" required>
+      </div>
+
+      <button class="primary-btn form-submit" type="submit" data-i18n="saveTransaction">
+        შენახვა
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* --------------------------------
+   WELTO — APPLICATION CORE
+--------------------------------- */
+
+const translations = {
+  ka: {
+    dashboard:"მიმოხილვა",
+    transactions:"ტრანზაქციები",
+    accounts:"ანგარიშები და საფულეები",
+    analytics:"ანალიტიკა",
+    budget:"ბიუჯეტის დაგეგმვა",
+    savings:"დანაზოგები და მიზნები",
+    debts:"ვალები და ვალდებულებები",
+    assets:"აქტივები და ქონება",
+    bills:"გადასახადები და გამოწერები",
+    forecast:"ფინანსური პროგნოზი",
+    shopping:"ჭკვიანი შესყიდვები",
+    family:"საოჯახო ფინანსები",
+    documents:"დოკუმენტების საცავი",
+    calendar:"ფინანსური კალენდარი",
+    tax:"საგადასახადო აღრიცხვა",
+    education:"ფინანსური განათლება",
+    tools:"ფინანსური ინსტრუმენტები",
+    settings:"პარამეტრები",
+    personalAccount:"პირადი ანგარიში",
+    addTransaction:"ტრანზაქციის დამატება",
+    transactionType:"ტრანზაქციის ტიპი",
+    expense:"ხარჯი",
+    income:"შემოსავალი",
+    description:"დასახელება",
+    amount:"თანხა",
+    currency:"ვალუტა",
+    category:"კატეგორია",
+    date:"თარიღი",
+    saveTransaction:"შენახვა",
+    balance:"მთლიანი ბალანსი",
+    available:"ხელმისაწვდომი თანხა",
+    incomeTotal:"შემოსავალი",
+    expenseTotal:"ხარჯები",
+    netWorth:"წმინდა ქონება",
+    financialOverview:"ფინანსური მიმოხილვა",
+    welcome:"მოგესალმები WELTO-ში",
+    overviewSubtitle:"შენი ფინანსური მდგომარეობა ერთ სივრცეში.",
+    addNew:"ახალი ტრანზაქცია",
+    incomeExpense:"შემოსავლები და ხარჯები",
+    monthlyActivity:"ყოველთვიური ფინანსური დინამიკა",
+    expensesByCategory:"ხარჯები კატეგორიების მიხედვით",
+    recentTransactions:"ბოლო ტრანზაქციები",
+    savingsGoals:"დანაზოგების მიზნები",
+    viewAll:"ყველას ნახვა",
+    noTransactions:"ტრანზაქციები ჯერ არ არის",
+    noTransactionsDesc:"დაამატე პირველი შემოსავალი ან ხარჯი.",
+    search:"ძიება...",
+    period:"პერიოდი",
+    personalTools:"პირადი ინსტრუმენტები",
+    planning:"ფინანსური დაგეგმვა",
+    intelligence:"ინტელექტუალური სისტემა"
+  },
+  en: {
+    dashboard:"Dashboard",
+    transactions:"Transactions",
+    accounts:"Accounts & Wallets",
+    analytics:"Analytics",
+    budget:"Budget Planner",
+    savings:"Savings Goals",
+    debts:"Debt Manager",
+    assets:"Assets & Net Worth",
+    bills:"Bills & Subscriptions",
+    forecast:"Financial Forecast",
+    shopping:"Smart Shopping",
+    family:"Family Finance",
+    documents:"Document Vault",
+    calendar:"Financial Calendar",
+    tax:"Tax Tracker",
+    education:"Financial Education",
+    tools:"Financial Tools",
+    settings:"Settings",
+    personalAccount:"Personal account",
+    addTransaction:"Add transaction",
+    transactionType:"Transaction type",
+    expense:"Expense",
+    income:"Income",
+    description:"Description",
+    amount:"Amount",
+    currency:"Currency",
+    category:"Category",
+    date:"Date",
+    saveTransaction:"Save transaction",
+    balance:"Total balance",
+    available:"Available balance",
+    incomeTotal:"Income",
+    expenseTotal:"Expenses",
+    netWorth:"Net worth",
+    financialOverview:"Financial overview",
+    welcome:"Welcome to WELTO",
+    overviewSubtitle:"Your entire financial picture in one place.",
+    addNew:"New transaction",
+    incomeExpense:"Income & Expenses",
+    monthlyActivity:"Monthly financial activity",
+    expensesByCategory:"Expenses by category",
+    recentTransactions:"Recent transactions",
+    savingsGoals:"Savings goals",
+    viewAll:"View all",
+    noTransactions:"No transactions yet",
+    noTransactionsDesc:"Add your first income or expense.",
+    search:"Search...",
+    period:"Period",
+    personalTools:"Personal tools",
+    planning:"Financial planning",
+    intelligence:"Intelligence"
+  }
+};
+
+const pageInfo = {
+  dashboard:{ka:"ფინანსური მიმოხილვა",en:"Financial Overview",icon:"layout-dashboard",desc:"შენი ფინანსური მდგომარეობა ერთ სივრცეში."},
+  transactions:{ka:"ტრანზაქციები",en:"Transactions",icon:"arrow-left-right",desc:"მართე ყველა შემოსავალი და ხარჯი ერთ სივრცეში."},
+  accounts:{ka:"ანგარიშები და საფულეები",en:"Accounts & Wallets",icon:"wallet",desc:"ყველა შენი ანგარიში, საფულე და ვალუტა."},
+  analytics:{ka:"ფინანსური ანალიტიკა",en:"Financial Analytics",icon:"chart-no-axes-combined",desc:"შეისწავლე შენი ფინანსური ტენდენციები და ჩვევები."},
+  budget:{ka:"ბიუჯეტის დაგეგმვა",en:"Budget Planner",icon:"chart-pie",desc:"დაგეგმე ხარჯები და აკონტროლე ფინანსური ლიმიტები."},
+  savings:{ka:"დანაზოგები და მიზნები",en:"Savings & Goals",icon:"target",desc:"შექმენი მიზნები და მიჰყევი დანაზოგის გეგმას."},
+  debts:{ka:"ვალები და ვალდებულებები",en:"Debt Manager",icon:"landmark",desc:"აკონტროლე სესხები, განვადებები და გადახდის გრაფიკები."},
+  assets:{ka:"აქტივები და წმინდა ქონება",en:"Assets & Net Worth",icon:"building-2",desc:"შეაფასე შენი აქტივები და მთლიანი ფინანსური მდგომარეობა."},
+  bills:{ka:"გადასახადები და გამოწერები",en:"Bills & Subscriptions",icon:"receipt",desc:"არ გამოგრჩეს არცერთი გადასახადი ან განმეორებადი გამოწერა."},
+  forecast:{ka:"ფინანსური პროგნოზი",en:"Financial Forecast",icon:"trending-up",desc:"შეაფასე მომავალი ფინანსური მდგომარეობა სხვადასხვა სცენარით."},
+  shopping:{ka:"ჭკვიანი შესყიდვები",en:"Smart Shopping",icon:"shopping-bag",desc:"შეაფასე დიდი შენაძენის გავლენა შენს ბიუჯეტზე."},
+  family:{ka:"საოჯახო ფინანსები",en:"Family Finance",icon:"users",desc:"მართე საერთო ბიუჯეტი და ოჯახის ფინანსური მიზნები."},
+  documents:{ka:"ფინანსური დოკუმენტები",en:"Document Vault",icon:"folder-lock",desc:"შეინახე მნიშვნელოვანი ფინანსური დოკუმენტები უსაფრთხოდ."},
+  calendar:{ka:"ფინანსური კალენდარი",en:"Financial Calendar",icon:"calendar-days",desc:"ერთ სივრცეში ნახე მომავალი ფინანსური მოვლენები."},
+  tax:{ka:"საგადასახადო აღრიცხვა",en:"Tax Tracker",icon:"file-text",desc:"აღრიცხე შემოსავლები და საგადასახადო ვალდებულებები."},
+  education:{ka:"ფინანსური განათლება",en:"Financial Education",icon:"graduation-cap",desc:"განავითარე ფინანსური ცოდნა და გადაწყვეტილებების მიღების უნარი."},
+  tools:{ka:"ფინანსური ინსტრუმენტები",en:"Financial Tools",icon:"calculator",desc:"გამოიყენე ყოველდღიური ფინანსური დამხმარე ინსტრუმენტები."},
+  ai:{ka:"WELTO AI ასისტენტი",en:"WELTO AI Assistant",icon:"sparkles",desc:"შენი პერსონალური ფინანსური ანალიზისა და დაგეგმვის სივრცე."},
+  settings:{ka:"პარამეტრები",en:"Settings",icon:"settings",desc:"მართე შენი ანგარიში, ენა, ვალუტა და უსაფრთხოება."}
+};
+
+let language = localStorage.getItem("welto_language") || "ka";
+let currentPage = "dashboard";
+
+const demoTransactions = [
+  {id:1,name:"ხელფასი",category:"Salary",type:"income",amount:3500,currency:"GEL",date:"2026-11-20"},
+  {id:2,name:"სასურსათო მაღაზია",category:"Food",type:"expense",amount:120,currency:"GEL",date:"2026-11-20"},
+  {id:3,name:"ინტერნეტი",category:"Housing",type:"expense",amount:55,currency:"GEL",date:"2026-11-19"},
+  {id:4,name:"ტრანსპორტი",category:"Transport",type:"expense",amount:35,currency:"GEL",date:"2026-11-18"},
+  {id:5,name:"ფრილანს პროექტი",category:"Other",type:"income",amount:700,currency:"GEL",date:"2026-11-17"}
+];
+
+let transactions = JSON.parse(localStorage.getItem("welto_transactions") || "null") || demoTransactions;
+
+function saveTransactions(){
+  localStorage.setItem("welto_transactions",JSON.stringify(transactions));
+}
+
+function t(key){
+  return translations[language][key] || key;
+}
+
+function money(value,currency="GEL"){
+  const symbols={GEL:"₾",USD:"$",EUR:"€"};
+  return (symbols[currency]||currency)+" "+Number(value).toLocaleString(language==="ka"?"ka-GE":"en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[c]));
+}
+
+function toast(message){
+  const el=document.getElementById("toast");
+  el.textContent=message;
+  el.classList.add("show");
+  setTimeout(()=>el.classList.remove("show"),2600);
+}
+
+function refreshIcons(){
+  if(window.lucide) lucide.createIcons();
+}
+
+function applyLanguage(){
+  document.documentElement.lang=language;
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const key=el.dataset.i18n;
+    if(translations[language][key]) el.textContent=translations[language][key];
+  });
+  document.getElementById("languageBtn").textContent=language==="ka"?"KA / EN":"EN / KA";
+  document.getElementById("globalSearch").placeholder=t("search");
+  renderPage();
+}
+
+document.getElementById("languageBtn").addEventListener("click",()=>{
+  language=language==="ka"?"en":"ka";
+  localStorage.setItem("welto_language",language);
+  applyLanguage();
+});
+
+function navigate(page){
+  if(!pageInfo[page]) return;
+  currentPage=page;
+  document.querySelectorAll(".nav-item").forEach(btn=>{
+    btn.classList.toggle("active",btn.dataset.page===page);
+  });
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("mobileOverlay").classList.remove("show");
+  renderPage();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+document.querySelectorAll(".nav-item").forEach(btn=>{
+  btn.addEventListener("click",()=>navigate(btn.dataset.page));
+});
+
+function renderPage(){
+  const info=pageInfo[currentPage];
+  const title=info[language];
+  document.getElementById("topPageTitle").textContent=title;
+  document.getElementById("breadcrumb").textContent=title;
+
+  if(currentPage==="dashboard"){
+    renderDashboard();
+  } else if(currentPage==="transactions"){
+    renderTransactionsPage();
+  } else {
+    renderGenericPage();
+  }
+
+  refreshIcons();
+}
+
+function calculateTotals(){
+  const income=transactions.filter(x=>x.type==="income"&&x.currency==="GEL").reduce((a,b)=>a+Number(b.amount),0);
+  const expenses=transactions.filter(x=>x.type==="expense"&&x.currency==="GEL").reduce((a,b)=>a+Number(b.amount),0);
+  return {income,expenses,balance:income-expenses};
+}
+
+function renderDashboard(){
+  const totals=calculateTotals();
+  const content=document.getElementById("pageContent");
+
+  content.innerHTML=`
+    <div class="welcome-row">
+      <div>
+        <div class="eyebrow">WELTO / PERSONAL FINANCE</div>
+        <h1>${t("welcome")}</h1>
+        <p class="subtitle">${t("overviewSubtitle")}</p>
+      </div>
+      <button class="primary-btn" onclick="openModal()">
+        <i data-lucide="plus"></i>${t("addNew")}
+      </button>
+    </div>
+
+    <div class="overview-grid">
+      <div class="balance-card">
+        <div class="card-top">
+          <span class="card-label">${t("balance")}</span>
+          <div class="card-icon"><i data-lucide="wallet"></i></div>
+        </div>
+        <div class="balance-value">${money(totals.balance)}</div>
+        <div class="balance-bottom">
+          <span class="balance-note">${t("available")}</span>
+          <span class="balance-change">● ${language==="ka"?"აქტიური ანგარიში":"Active account"}</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-top">
+          <span class="metric-name">${t("incomeTotal")}</span>
+          <div class="metric-icon"><i data-lucide="trending-up"></i></div>
+        </div>
+        <div>
+          <div class="metric-value positive">${money(totals.income)}</div>
+          <div class="metric-foot">${language==="ka"?"აღრიცხული შემოსავალი":"Recorded income"}</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-top">
+          <span class="metric-name">${t("expenseTotal")}</span>
+          <div class="metric-icon"><i data-lucide="trending-down"></i></div>
+        </div>
+        <div>
+          <div class="metric-value">${money(totals.expenses)}</div>
+          <div class="metric-foot">${language==="ka"?"აღრიცხული ხარჯები":"Recorded expenses"}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">${t("incomeExpense")}</div>
+            <div class="panel-desc">${t("monthlyActivity")}</div>
+          </div>
+          <select class="period-select" id="chartPeriod">
+            <option>${language==="ka"?"ბოლო 6 თვე":"Last 6 months"}</option>
+          </select>
+        </div>
+        <div class="chart-wrap"><canvas id="incomeChart"></canvas></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">${t("expensesByCategory")}</div>
+            <div class="panel-desc">${language==="ka"?"ხარჯების განაწილება":"Expense distribution"}</div>
+          </div>
+        </div>
+        <div class="donut-wrap"><canvas id="categoryChart"></canvas></div>
+        <div class="legend-list" id="categoryLegend"></div>
+      </div>
+    </div>
+
+    <div class="lower-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">${t("recentTransactions")}</div>
+            <div class="panel-desc">${language==="ka"?"ბოლო ფინანსური აქტივობები":"Latest financial activity"}</div>
+          </div>
+          <button class="secondary-btn" onclick="navigate('transactions')">${t("viewAll")}</button>
+        </div>
+        ${transactionTable(5)}
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">${t("savingsGoals")}</div>
+            <div class="panel-desc">${language==="ka"?"მიზნების პროგრესი":"Your progress"}</div>
+          </div>
+          <i data-lucide="target" style="width:17px;color:#7897B0"></i>
+        </div>
+        <div class="goal-list">
+          ${goalHTML("Emergency Fund","₾ 2,400 / ₾ 5,000",48,"48%")}
+          ${goalHTML("Travel","₾ 1,800 / ₾ 3,000",60,"60%")}
+          ${goalHTML("New Laptop","₾ 900 / ₾ 2,500",36,"36%")}
+        </div>
+      </div>
+    </div>
+    <p style="font-size:9px;color:#A0A9B2;margin-top:17px">
+      ${language==="ka"?"საჩვენებელი საწყისი მონაცემები. ჩაწერილი ტრანზაქციები ინახება ამ ბრაუზერში.":"Illustrative starting data. Transactions are stored in this browser."}
+    </p>
+  `;
+
+  drawCharts();
+  refreshIcons();
+}
+
+function goalHTML(name,amount,progress,percent){
+  return `
+    <div>
+      <div class="goal-head">
+        <span class="goal-name">${name}</span>
+        <span class="goal-amount">${amount}</span>
+      </div>
+      <div class="progress"><div class="progress-bar" style="width:${progress}%"></div></div>
+      <div class="goal-foot">
+        <span>${language==="ka"?"შესრულებულია":"Completed"}</span>
+        <span>${percent}</span>
+      </div>
+    </div>
+  `;
+}
+
+function transactionTable(limit=100){
+  if(!transactions.length){
+    return `<div class="empty-state">
+      <i data-lucide="receipt"></i>
+      <h3>${t("noTransactions")}</h3>
+      <p>${t("noTransactionsDesc")}</p>
+    </div>`;
+  }
+
+  const rows=[...transactions].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,limit);
+
+  return `
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>${language==="ka"?"დასახელება":"DESCRIPTION"}</th>
+          <th>${language==="ka"?"თარიღი":"DATE"}</th>
+          <th>${language==="ka"?"თანხა":"AMOUNT"}</th>
+          <th>${language==="ka"?"ტიპი":"TYPE"}</th>
+          ${currentPage==="transactions"?"<th></th>":""}
+        </tr></thead>
+        <tbody>
+          ${rows.map(x=>`
+            <tr>
+              <td>
+                <div class="transaction-name">${escapeHTML(x.name)}</div>
+                <div class="transaction-category">${escapeHTML(x.category)}</div>
+              </td>
+              <td style="color:#89939D">${escapeHTML(x.date)}</td>
+              <td class="transaction-amount ${x.type==="income"?"positive":"negative"}">
+                ${x.type==="income"?"+":"−"} ${money(x.amount,x.currency)}
+              </td>
+              <td><span class="status" style="${x.type==="expense"?"background:#FBEEEE;color:#B65A5A":""}">
+                ${x.type==="income"?t("income"):t("expense")}
+              </span></td>
+              ${currentPage==="transactions"?`
+                <td><button class="icon-btn" style="width:29px;height:29px" onclick="deleteTransaction(${x.id})"><i data-lucide="trash-2"></i></button></td>
+              `:""}
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function drawCharts(){
+  if(!window.Chart) return;
+
+  const incomeCanvas=document.getElementById("incomeChart");
+  const categoryCanvas=document.getElementById("categoryChart");
+  if(!incomeCanvas||!categoryCanvas) return;
+
+  const incomeData=[0,0,0,0,0,0];
+  const expenseData=[0,0,0,0,0,0];
+
+  transactions.forEach(x=>{
+    const month=new Date(x.date+"T12:00:00").getMonth();
+    const now=new Date().getMonth();
+    let index=(month-now+6)%6;
+    if(index<6){
+      if(x.type==="income"&&x.currency==="GEL") incomeData[index]+=Number(x.amount);
+      if(x.type==="expense"&&x.currency==="GEL") expenseData[index]+=Number(x.amount);
+    }
+  });
+
+  const labels=language==="ka"
+    ?["5 თვის წინ","4 თვის წინ","3 თვის წინ","2 თვის წინ","წინა თვე","მიმდინარე"]
+    :["5 months ago","4 months ago","3 months ago","2 months ago","Last month","Current"];
+
+  new Chart(incomeCanvas,{
+    type:"bar",
+    data:{
+      labels,
+      datasets:[
+        {label:t("incomeTotal"),data:incomeData,backgroundColor:"#A7C3D9",borderRadius:5,barThickness:12},
+        {label:t("expenseTotal"),data:expenseData,backgroundColor:"#DCE3E9",borderRadius:5,barThickness:12}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{display:false},ticks:{color:"#9AA4AD",font:{size:9}}},
+        y:{grid:{color:"#F0F2F4"},ticks:{color:"#9AA4AD",font:{size:9}}}
+      }
+    }
+  });
+
+  const categoryNames=["Food","Transport","Housing","Shopping","Health","Other"];
+  const categoryValues=categoryNames.map(cat=>
+    transactions.filter(x=>x.type==="expense"&&x.category===cat&&x.currency==="GEL")
+      .reduce((sum,x)=>sum+Number(x.amount),0)
+  );
+
+  const colors=["#8CAAC1","#B7C8D6","#D5DEE5","#7897B0","#AEBBC6","#E7EBEF"];
+
+  new Chart(categoryCanvas,{
+    type:"doughnut",
+    data:{
+      labels:categoryNames,
+      datasets:[{data:categoryValues.some(v=>v>0)?categoryValues:[1,1,1,1,1,1],backgroundColor:colors,borderWidth:0,hoverOffset:3}]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,cutout:"73%",
+      plugins:{legend:{display:false}}
+    }
+  });
+
+  document.getElementById("categoryLegend").innerHTML=categoryNames.map((name,i)=>`
+    <div class="legend-item">
+      <div class="legend-left"><span class="legend-dot" style="background:${colors[i]}"></span>${name}</div>
+      <strong>${categoryValues[i].toLocaleString()}</strong>
+    </div>
+  `).join("");
+}
+
+function renderTransactionsPage(){
+  document.getElementById("pageContent").innerHTML=`
+    <div class="welcome-row">
+      <div>
+        <div class="eyebrow">WELTO / FINANCIAL ACTIVITY</div>
+        <h1>${pageInfo.transactions[language]}</h1>
+        <p class="subtitle">${pageInfo.transactions.desc}</p>
+      </div>
+      <button class="primary-btn" onclick="openModal()"><i data-lucide="plus"></i>${t("addNew")}</button>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">${t("recentTransactions")}</div>
+        <div class="search-box"><i data-lucide="search"></i><input id="transactionSearch" placeholder="${t("search")}"></div>
+      </div>
+      <div id="transactionResults">${transactionTable()}</div>
+    </div>
+  `;
+
+  document.getElementById("transactionSearch").addEventListener("input",e=>{
+    const q=e.target.value.toLowerCase();
+    const filtered=transactions.filter(x=>
+      x.name.toLowerCase().includes(q)||x.category.toLowerCase().includes(q)
+    );
+    document.getElementById("transactionResults").innerHTML=transactionTableFiltered(filtered);
+    refreshIcons();
+  });
+}
+
+function transactionTableFiltered(items){
+  const original=transactions;
+  transactions=items;
+  const html=transactionTable();
+  transactions=original;
+  return html;
+}
+
+function deleteTransaction(id){
+  if(!confirm(language==="ka"?"გსურს ამ ტრანზაქციის წაშლა?":"Delete this transaction?")) return;
+  transactions=transactions.filter(x=>x.id!==id);
+  saveTransactions();
+  renderPage();
+  toast(language==="ka"?"ტრანზაქცია წაიშალა":"Transaction deleted");
+}
+
+function renderGenericPage(){
+  const info=pageInfo[currentPage];
+  const content=document.getElementById("pageContent");
+
+  const modules={
+    accounts:[
+      ["Bank Accounts","საბანკო ანგარიშების მართვა","landmark"],
+      ["Cash Wallet","ნაღდი ფულის აღრიცხვა","wallet"],
+      ["Multiple Currencies","სხვადასხვა ვალუტის მართვა","coins"]
+    ],
+    analytics:[
+      ["Income Analysis","შემოსავლების დინამიკა","trending-up"],
+      ["Expense Analysis","ხარჯების კატეგორიები და ტენდენციები","chart-pie"],
+      ["Net Worth Report","წმინდა ქონების ისტორია","chart-no-axes-combined"]
+    ],
+    budget:[
+      ["Monthly Budget","თვიური ბიუჯეტის დაგეგმვა","calendar"],
+      ["Category Limits","კატეგორიების ლიმიტები","sliders-horizontal"],
+      ["Spending Alerts","გადახარჯვის შეტყობინებები","bell-ring"]
+    ],
+    savings:[
+      ["Savings Goals","ფინანსური მიზნების შექმნა","target"],
+      ["Emergency Fund","საგანგებო ფონდის მართვა","shield-check"],
+      ["Goal Scenarios","დანაზოგის სცენარების შედარება","git-compare"]
+    ],
+    debts:[
+      ["Loans","სესხების აღრიცხვა","landmark"],
+      ["Installments","განვადებების კონტროლი","calendar-check"],
+      ["Repayment Strategy","დაფარვის სტრატეგიები","route"]
+    ],
+    assets:[
+      ["Property","უძრავი ქონება","house"],
+      ["Vehicles","ავტომობილები","car-front"],
+      ["Investments","ინვესტიციები და სხვა აქტივები","chart-no-axes-combined"]
+    ],
+    bills:[
+      ["Utilities","კომუნალური გადასახადები","zap"],
+      ["Subscriptions","ციფრული გამოწერები","repeat"],
+      ["Payment Reminders","გადახდის შეხსენებები","bell"]
+    ],
+    forecast:[
+      ["Monthly Forecast","თვის ბოლოს სავარაუდო ნაშთი","calendar-days"],
+      ["Scenario Planning","შემოსავლისა და ხარჯების სცენარები","git-branch"],
+      ["Purchase Impact","დიდი შენაძენის გავლენა","shopping-cart"]
+    ],
+    shopping:[
+      ["Purchase Planner","შენაძენის წინასწარი დაგეგმვა","shopping-bag"],
+      ["Payment Comparison","განვადებისა და ერთჯერადი გადახდის შედარება","calculator"],
+      ["Wishlist","სურვილების სია","heart"]
+    ],
+    family:[
+      ["Shared Budget","საერთო საოჯახო ბიუჯეტი","users"],
+      ["Family Members","ოჯახის წევრების მართვა","user-round"],
+      ["Shared Goals","საერთო დანაზოგის მიზნები","target"]
+    ],
+    documents:[
+      ["Document Library","ფინანსური დოკუმენტების საცავი","folder"],
+      ["Receipts","ქვითრების მართვა","receipt"],
+      ["Secure Storage","დაცული დოკუმენტების სივრცე","shield-check"]
+    ],
+    calendar:[
+      ["Payment Calendar","გადასახადების კალენდარი","calendar"],
+      ["Upcoming Events","მომავალი ფინანსური მოვლენები","bell"],
+      ["Recurring Payments","განმეორებადი გადახდები","repeat"]
+    ],
+    tax:[
+      ["Income Records","შემოსავლების აღრიცხვა","file-text"],
+      ["Tax Obligations","საგადასახადო ვალდებულებები","landmark"],
+      ["Tax Reports","საგადასახადო ანგარიშები","file-chart-column"]
+    ],
+    education:[
+      ["Personal Finance","პირადი ფინანსების საფუძვლები","book-open"],
+      ["Budgeting","ბიუჯეტირების გზამკვლევი","book-mark"],
+      ["Financial Literacy","ფინანსური განათლების რესურსები","graduation-cap"]
+    ],
+    tools:[
+      ["Currency Converter","ვალუტების კონვერტაცია","arrow-left-right"],
+      ["Compound Interest","რთული პროცენტის კალკულატორი","calculator"],
+      ["Export Center","CSV, Excel და PDF ანგარიშები","download"]
+    ],
+    ai:[
+      ["Financial Insights","ფინანსური მონაცემების ანალიზი","brain"],
+      ["Smart Recommendations","პერსონალური რეკომენდაციები","sparkles"],
+      ["Financial Scenarios","სხვადასხვა ფინანსური სცენარი","git-branch"]
+    ],
+    settings:[
+      ["Profile","პროფილის პარამეტრები","user"],
+      ["Language & Currency","ენა და ძირითადი ვალუტა","languages"],
+      ["Privacy & Security","კონფიდენციალურობა და უსაფრთხოება","shield"]
+    ]
+  };
+
+  const list=modules[currentPage]||[];
+  const cards=list.map(item=>`
+    <div class="feature-card">
+      <div class="feature-card-icon"><i data-lucide="${item[2]}"></i></div>
+      <h3>${item[0]}</h3>
+      <p>${item[1]}</p>
+    </div>
+  `).join("");
+
+  let extra="";
+
+  if(currentPage==="tools"){
+    extra=`
+      <div class="panel" style="margin-top:17px">
+        <div class="panel-title">${language==="ka"?"ვალუტის კონვერტატორი":"Currency Converter"}</div>
+        <div class="form-row" style="margin-top:18px">
+          <div class="form-group">
+            <label>${language==="ka"?"თანხა":"Amount"}</label>
+            <input id="convertAmount" type="number" value="100">
+          </div>
+          <div class="form-group">
+            <label>${language==="ka"?"ვალუტა":"Currency"}</label>
+            <select id="convertCurrency">
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GEL">GEL</option>
+            </select>
+          </div>
+        </div>
+        <p style="font-size:10px;color:#87919C" id="convertResult">${language==="ka"?"კონვერტაციისთვის საჭიროა განახლებული გაცვლითი კურსი.":"Live exchange rates are required for conversion."}</p>
+      </div>
+    `;
+  }
+
+  if(currentPage==="ai"){
+    extra=`
+      <div class="panel" style="margin-top:17px">
+        <div class="panel-title">WELTO AI</div>
+        <p class="subtitle" style="margin:10px 0 18px">${language==="ka"?"AI ასისტენტის რეალური ფუნქციონალი სერვერულ AI ინტეგრაციას საჭიროებს. ამ ეტაპზე ეს არის ინტერფეისის კონცეფცია.":"The AI assistant requires a server-side AI integration. This is currently an interface concept."}</p>
+        <div class="form-group">
+          <input id="aiQuestion" placeholder="${language==="ka"?"დასვი ფინანსური კითხვა...":"Ask a financial question..."}">
+        </div>
+        <button class="primary-btn" onclick="toast('${language==="ka"?"AI ასისტენტი ჯერ არ არის დაკავშირებული სერვერთან.":"AI is not connected to a backend yet."}')">
+          <i data-lucide="sparkles"></i>${language==="ka"?"კითხვის გაგზავნა":"Send question"}
+        </button>
+      </div>
+    `;
+  }
+
+  content.innerHTML=`
+    <div class="welcome-row">
+      <div>
+        <div class="eyebrow">WELTO / ${currentPage.toUpperCase()}</div>
+        <h1>${info[language]}</h1>
+        <p class="subtitle">${info.desc}</p>
+      </div>
+      ${currentPage==="settings"?"":`<button class="secondary-btn" onclick="toast('${language==="ka"?"ეს მოდული მომდევნო ეტაპზე გააქტიურდება.":"This module will be activated in a future update."}')">${language==="ka"?"მეტი ინფორმაცია":"Learn more"}</button>`}
+    </div>
+    <div class="page-intro">
+      <h2>${info[language]}</h2>
+      <p>${info.desc} ${language==="ka"?"ამ მოდულის სრული ფუნქციონალი ეტაპობრივად დაემატება WELTO-ს სისტემას.":"Full functionality will be introduced as WELTO evolves."}</p>
+    </div>
+    <div class="page-grid">${cards}</div>
+    ${extra}
+  `;
+}
+
+/* MODAL */
+
+function openModal(){
+  document.getElementById("transactionModal").classList.add("show");
+  document.getElementById("txDate").value=new Date().toISOString().slice(0,10);
+}
+function closeModal(){
+  document.getElementById("transactionModal").classList.remove("show");
+}
+
+document.getElementById("closeModal").addEventListener("click",closeModal);
+document.getElementById("transactionModal").addEventListener("click",e=>{
+  if(e.target.id==="transactionModal") closeModal();
+});
+
+document.getElementById("transactionForm").addEventListener("submit",e=>{
+  e.preventDefault();
+
+  const item={
+    id:Date.now(),
+    type:document.getElementById("txType").value,
+    name:document.getElementById("txName").value.trim(),
+    amount:Number(document.getElementById("txAmount").value),
+    currency:document.getElementById("txCurrency").value,
+    category:document.getElementById("txCategory").value,
+    date:document.getElementById("txDate").value
+  };
+
+  if(!item.name||!item.amount||item.amount<=0||!item.date) return;
+
+  transactions.push(item);
+  saveTransactions();
+  e.target.reset();
+  closeModal();
+  renderPage();
+  toast(language==="ka"?"ტრანზაქცია წარმატებით დაემატა":"Transaction added successfully");
+});
+
+/* SEARCH */
+
+document.getElementById("globalSearch").addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    const query=e.target.value.toLowerCase().trim();
+    const match=Object.keys(pageInfo).find(key=>
+      pageInfo[key].en.toLowerCase().includes(query)||
+      pageInfo[key].ka.toLowerCase().includes(query)
+    );
+    if(match) navigate(match);
+    else if(query) navigate("transactions");
+  }
+});
+
+/* MOBILE */
+
+document.getElementById("menuToggle").addEventListener("click",()=>{
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("mobileOverlay").classList.toggle("show");
+});
+document.getElementById("mobileOverlay").addEventListener("click",()=>{
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("mobileOverlay").classList.remove("show");
+});
+
+document.getElementById("notificationBtn").addEventListener("click",()=>{
+  toast(language==="ka"?"ახალი შეტყობინებები ჯერ არ არის":"No new notifications");
+});
+
+/* START */
+
+applyLanguage();
+refreshIcons();
+
+</script>
+</body>
+</html>
